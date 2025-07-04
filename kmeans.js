@@ -40,8 +40,6 @@ export async function kmeans(objects, initialCentroids) {
     const maxTries = _max(Math.sqrt(initialCentroids.length * objects.length), MAX_TRIES);
     let tries = 0;
 
-    const mainJobId = (gKMeansWorkerJobId++).toString();
-
     const objectsSplit = splitArrBy(objects, NUM_WORKERS);
 
     while (!same && tries < maxTries) {
@@ -49,7 +47,7 @@ export async function kmeans(objects, initialCentroids) {
       
         const newCentroids = await buildNewCentroids(partitions);
       
-        same = centroidArrsAreSame(mainJobId, centroids, newCentroids);
+        same = centroidArrsAreSame(centroids, newCentroids);
         centroids = newCentroids;
         ++tries;
     }
@@ -164,7 +162,7 @@ function compareColorObjects(a, b) {
     return compareArrs(aArr, bArr); 
 }
 
-function centroidArrsAreSame(jobId, arrA, arrB) {
+function centroidArrsAreSame(arrA, arrB) {
     if (arrA.length !== arrB.length) return false;
     const aSorted = arrA.sort(compareColorObjects);
     const bSorted = arrB.sort(compareColorObjects);

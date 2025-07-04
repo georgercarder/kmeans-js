@@ -55,7 +55,7 @@ export async function kmeans(objects, initialCentroids) {
     const keys = Object.keys(partitions);
     for (let i = 0; i < keys.length; ++i) {
         const k = keys[i];
-        const centroid = k; // as a hex string
+        const centroid = k; // as a json stringified array
         const p = partitions[k];
         for (let j = 0; j < p.length; ++j) {
             const o = p[j];

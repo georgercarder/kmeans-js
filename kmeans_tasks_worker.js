@@ -1,4 +1,4 @@
-"user strict";
+"use strict";
 
 console.warn("kmeans tasks worker loaded");
 

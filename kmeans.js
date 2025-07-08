@@ -167,8 +167,6 @@ function centroidArrsAreSame(arrA, arrB) {
     const aSorted = arrA.sort(compareColorObjects);
     const bSorted = arrB.sort(compareColorObjects);
 
-    /*
-    // debug
     let d = 0;
     for (let i = 0; i < aSorted.length; ++i) {
         const a = aSorted[i].ogColor;
@@ -176,15 +174,14 @@ function centroidArrsAreSame(arrA, arrB) {
         d += Math.sqrt((a[0]-b[0])**2 + (a[1]-b[1])**2 + (a[2]-b[2])**2);
     }
     d /= aSorted.length;
-    if (d < 1) return true;
+    return d < 1; // more certain convergence
 
-    console.warn({d});
-    */
-
+    /*
     const sA = JSON.stringify(aSorted);
     const sB = JSON.stringify(bSorted);
 
     return sA === sB;
+    */
 }
 
 function _max(a, b) {

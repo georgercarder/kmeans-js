@@ -31,6 +31,8 @@ init();
 export async function kmeans(objects, initialCentroids) {
     if (initialCentroids.length < 1) throw Error("trivial centroids");
 
+    initialCentroids = initialCentroids.sort(compareColorObjects);
+
     // partition objects wrt centroids
     let centroids = initialCentroids;
     let same = false;
@@ -47,15 +49,17 @@ export async function kmeans(objects, initialCentroids) {
       
         const newCentroids = await buildNewCentroids(partitions);
       
+        // note: both arrs are sorted
         same = centroidArrsAreSame(centroids, newCentroids);
         centroids = newCentroids;
         ++tries;
+        console.warn(same, tries, maxTries);
     }
     const ret = [];
     const keys = Object.keys(partitions);
     for (let i = 0; i < keys.length; ++i) {
         const k = keys[i];
-        const centroid = k; // as a json stringified array
+        const centroid = k; // as a stringified rgb arr
         const p = partitions[k];
         for (let j = 0; j < p.length; ++j) {
             const o = p[j];
@@ -106,7 +110,7 @@ async function buildNewCentroids(partitions) {
         const res = await ress[i];
         newCentroids = newCentroids.concat(res);   
     }
-    return newCentroids;
+    return newCentroids.sort(compareColorObjects);
 }
 
 function _workerBuildNewCentroids(sCentroids, partitions) {
@@ -146,8 +150,25 @@ function _updateRestingColorObject(object, sCentroid) {
     object.restingColor = JSON.parse(sCentroid);
 }
 
+function compareArrs(a, b) {
+    if (a.length == b.length && b.length == 0) return 0;
+    const _a = a[0];
+    const _b = b[0];
+    if (_a < _b) return -1;
+    if (_a > _b) return 1;
+    return compareArrs(a.slice(1), b.slice(1));
+}
+
+function compareColorObjects(a, b) {
+    const aArr = a.ogColor;
+    const bArr = b.ogColor;
+
+    return compareArrs(aArr, bArr); 
+}
+
 function centroidArrsAreSame(arrA, arrB) {
     if (arrA.length !== arrB.length) return false;
+
     let d = 0;
     for (let i = 0; i < arrA.length; ++i) {
         const a = arrA[i].ogColor;
@@ -155,7 +176,7 @@ function centroidArrsAreSame(arrA, arrB) {
         d += Math.sqrt((a[0]-b[0])**2 + (a[1]-b[1])**2 + (a[2]-b[2])**2);
     }
     d /= arrA.length;
-    return d < 1; // more certain convergence
+    return d < 1; // converged
 }
 
 function _max(a, b) {

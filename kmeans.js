@@ -146,42 +146,16 @@ function _updateRestingColorObject(object, sCentroid) {
     object.restingColor = JSON.parse(sCentroid);
 }
 
-// assuming they are same length
-function compareArrs(a, b) {
-    if (a.length == b.length && b.length == 0) return 0;
-    const _a = a[0];
-    const _b = b[0];
-    if (_a < _b) return -1;
-    if (_a > _b) return 1;
-    return compareArrs(a.slice(1), b.slice(1));
-}
-
-function compareColorObjects(a, b) {
-    const aArr = a.ogColor;
-    const bArr = b.ogColor;
-    return compareArrs(aArr, bArr); 
-}
-
 function centroidArrsAreSame(arrA, arrB) {
     if (arrA.length !== arrB.length) return false;
-    const aSorted = arrA.sort(compareColorObjects);
-    const bSorted = arrB.sort(compareColorObjects);
-
     let d = 0;
-    for (let i = 0; i < aSorted.length; ++i) {
-        const a = aSorted[i].ogColor;
-        const b = bSorted[i].ogColor;
+    for (let i = 0; i < arrA.length; ++i) {
+        const a = arrA[i].ogColor;
+        const b = arrB[i].ogColor;
         d += Math.sqrt((a[0]-b[0])**2 + (a[1]-b[1])**2 + (a[2]-b[2])**2);
     }
-    d /= aSorted.length;
+    d /= arrA.length;
     return d < 1; // more certain convergence
-
-    /*
-    const sA = JSON.stringify(aSorted);
-    const sB = JSON.stringify(bSorted);
-
-    return sA === sB;
-    */
 }
 
 function _max(a, b) {
